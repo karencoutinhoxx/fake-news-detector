@@ -1,82 +1,109 @@
 ﻿# Quick Start Guide
 
-## Option 1: Docker (Recommended)
+Get the fake news detector up and running in 5 minutes.
 
-\\\ash
+## Option 1: Docker (Recommended - Easiest)
+
+```bash
 docker-compose up
-\\\
+```
 
-Access:
+Then access:
 - Frontend: http://localhost:3000
 - API: http://localhost:5000
 - Prometheus: http://localhost:9090
-- Grafana: http://localhost:3001
+- Grafana: http://localhost:3001 (admin/admin)
 
 ## Option 2: Local Development
 
-### Windows PowerShell
+### 1. Create Virtual Environment
 
-\\\powershell
+```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
+```
+
+### 2. Install Dependencies
+
+```powershell
 pip install -r requirements.txt
-\\\
+```
 
-### Run API (New Terminal)
+### 3. Run API (Terminal 1)
 
-\\\powershell
+```powershell
 .\venv\Scripts\Activate.ps1
 cd src\api
 flask run
-\\\
+```
 
-API: http://localhost:5000
+API at: http://localhost:5000
 
-### Run Frontend (New Terminal)
+### 4. Run Frontend (Terminal 2)
 
-\\\powershell
+```powershell
 cd frontend
 npm install
 npm start
-\\\
+```
 
-Frontend: http://localhost:3000
+Frontend at: http://localhost:3000
 
 ## Making Predictions
 
-### Via API
+### Test API (PowerShell)
 
-\\\powershell
-\ = @{
-    text = "Your article text here"
-    title = "Article title"
+```powershell
+$body = @{
+    text = "This is a test article about politics"
+    title = "Test Article"
 } | ConvertTo-Json
 
-Invoke-RestMethod -Uri "http://localhost:5000/api/predict" 
-  -Method POST 
-  -ContentType "application/json" 
-  -Body \
-\\\
+Invoke-RestMethod -Uri "http://localhost:5000/api/predict" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body $body
+```
 
-### Via Web Interface
+### Check Health
 
-1. Open http://localhost:3000
-2. Paste article text
-3. Click Analyze
-4. View results
+```powershell
+Invoke-RestMethod -Uri "http://localhost:5000/api/health"
+```
 
 ## Training Models
 
-\\\powershell
+```powershell
 python src/models/train_ensemble.py --dataset isot
-\\\
+```
 
-## Testing
+## Running Tests
 
-\\\powershell
+```powershell
 pytest tests/ -v
-\\\
+```
+
+## Troubleshooting
+
+### Port Already in Use
+
+Change port in src/api/app.py or use Docker
+
+### Database Connection Error
+
+Make sure PostgreSQL is running (Docker handles this)
+
+### Out of Memory
+
+Reduce batch_size in configs/config.yaml
+
+## Next Steps
+
+1. Download ISOT dataset from Kaggle
+2. Place in data/raw/
+3. Train models: python src/models/train_ensemble.py
+4. Deploy to cloud (see docs/SETUP.md)
 
 ---
 
-For full setup guide, see docs/SETUP.md
+For full setup: See docs/SETUP.md
